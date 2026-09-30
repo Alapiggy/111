@@ -40,7 +40,6 @@
     .stat{background:#f9fafb;border-radius:10px;padding:12px;text-align:center}
     .stat .v{font-size:20px;font-weight:700}
     .stat .k{font-size:12px;color:var(--muted);margin-top:2px}
-    /* 搜索 */
     .search-line{display:flex;gap:8px;align-items:center;margin-bottom:12px}
     .search-line input{flex:1}
     #results{max-height:320px;overflow:auto;border:1px solid var(--border);border-radius:10px}
@@ -53,14 +52,12 @@
     .tag{font-size:11px;padding:1px 6px;border-radius:4px;background:#eef2ff;color:var(--primary);margin-left:6px}
     .tag.off{background:#ecfdf5;color:var(--green)}
     .empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
-    /* 记录 */
     .log{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed var(--border)}
     .log:last-child{border-bottom:none}
     .log .ln{font-size:14px}
     .log .lm{font-size:12px;color:var(--muted)}
     .del{background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:18px;padding:0 4px}
     .del:hover{color:var(--red)}
-    /* 进度 */
     .bar{height:10px;background:#eef0f4;border-radius:6px;overflow:hidden;margin:6px 0 12px}
     .bar i{display:block;height:100%;border-radius:6px;transition:width .3s}
     .prog-h{font-size:13px;display:flex;justify-content:space-between;color:var(--muted)}
@@ -70,8 +67,6 @@
     .note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:10px}
     .hidden{display:none !important}
     .spinner{text-align:center;padding:20px;color:var(--muted);font-size:13px}
-    
-    /* 独立登录/注册界面样式 */
     .auth-container{max-width:400px;margin:60px auto 0}
     .auth-header{text-align:center;margin-bottom:20px}
     .auth-header h2{font-size:20px;color:var(--text);margin-bottom:6px}
@@ -85,8 +80,6 @@
 </head>
 <body>
 <div class="wrap">
-
-  <!-- ============ 登录 / 注册 独立界面 ============ -->
   <div id="authSection" class="auth-container">
     <div class="auth-header">
       <h1 style="margin-bottom: 8px;">每日热量计算器</h1>
@@ -112,7 +105,6 @@
     </div>
   </div>
 
-  <!-- ============ 主应用界面 (登录后可见) ============ -->
   <div id="appSection" class="hidden">
     <div class="user-bar">
       <div>当前用户：<strong id="userEmailTag">-</strong></div>
@@ -121,14 +113,13 @@
 
     <h1>每日热量计算器</h1>
     <p class="sub">内置 200+ 中式食物库 + 在线包装食品查询，可记录当日饮食</p>
-    
+
     <div class="tabs">
       <button id="tabLog" class="active" onclick="switchTab('log')">今日饮食</button>
       <button id="tabScan" onclick="switchTab('scan')">拍照录入库</button>
       <button id="tabMe" onclick="switchTab('me')">我的数据</button>
     </div>
 
-    <!-- ============ 今日饮食 ============ -->
     <div id="pageLog">
       <div class="card">
         <h2>汇总（今日）</h2>
@@ -146,6 +137,7 @@
         </div>
         <div class="note" id="advice"></div>
       </div>
+
       <div class="card">
         <h2>添加食物</h2>
         <div class="search-line">
@@ -167,13 +159,13 @@
         </div>
         <div class="note" id="selInfo">尚未选择食物。点击上方结果条目可选中。</div>
       </div>
+
       <div class="card">
         <h2>饮食记录 <span id="logCount" style="color:var(--muted);font-weight:400"></span></h2>
         <div id="logList"><div class="empty">今天还没有记录</div></div>
       </div>
     </div>
 
-    <!-- ============ 拍照识别录入 ============ -->
     <div id="pageScan" class="hidden">
       <div class="card">
         <h2>① 拍照 / 上传营养成分表</h2>
@@ -225,6 +217,7 @@
         </div>
         <div class="note" style="margin-top:10px" id="ocrStatus">本地 OCR 首次使用需从 CDN 下载中文识别模型（约 20MB，需联网），之后浏览器会缓存。手机可直接调用相机拍照。</div>
       </div>
+
       <div class="card">
         <h2>② 识别结果（可直接修改纠错）</h2>
         <div class="row"><label>原始识别文字</label>
@@ -235,16 +228,13 @@
           <button class="btn-sm" onclick="clearForm()">清空表单</button>
         </div>
       </div>
+
       <div class="card">
         <h2>③ 校对后存入食物库</h2>
         <div class="row"><label>食物名称 *</label><input type="text" id="fName" placeholder="如：XX牌全麦吐司"></div>
         <div class="grid2">
-          <div class="row"><label>能量（千卡 / 每100g）*</label>
-            <input type="number" id="fKcal" step="0.1" oninput="syncFromKcal()">
-          </div>
-          <div class="row"><label>或填 能量（kJ 千焦 / 每100g）</label>
-            <input type="number" id="fKj" step="1" oninput="syncFromKj()" placeholder="自动换算为千卡">
-          </div>
+          <div class="row"><label>能量（千卡 / 每100g）*</label><input type="number" id="fKcal" step="0.1" oninput="syncFromKcal()"></div>
+          <div class="row"><label>或填 能量（kJ 千焦 / 每100g）</label><input type="number" id="fKj" step="1" oninput="syncFromKj()" placeholder="自动换算为千卡"></div>
           <div class="row"><label>蛋白质（g / 每100g）</label><input type="number" id="fP" step="0.1" oninput="autoKcal()"></div>
           <div class="row"><label>脂肪（g / 每100g）</label><input type="number" id="fF" step="0.1" oninput="autoKcal()"></div>
           <div class="row"><label>碳水化合物（g / 每100g）</label><input type="number" id="fC" step="0.1" oninput="autoKcal()"></div>
@@ -255,6 +245,7 @@
         <div class="note" id="parseTip">留空能量时，会按 蛋白×4 + 碳水×4 + 脂肪×9 自动估算。</div>
         <button class="btn" onclick="saveCustom()">存入我的食物库</button>
       </div>
+
       <div class="card">
         <h2>我的食物库 · 自建条目 <span id="cfCount" style="color:var(--muted);font-weight:400"></span></h2>
         <div id="cfList"><div class="empty">还没有自建食物</div></div>
@@ -268,7 +259,6 @@
       </div>
     </div>
 
-    <!-- ============ 我的数据 ============ -->
     <div id="pageMe" class="hidden">
       <div class="card">
         <h2>基本信息</h2>
@@ -302,6 +292,7 @@
           </div>
         </div>
       </div>
+
       <div class="card">
         <h2>计算结果</h2>
         <div class="grid2">
@@ -317,18 +308,15 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
-/* ================= Supabase 客户端配置 ================= */
 const SUPABASE_URL = 'https://xrrutssstigcfgzyadhm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_KJ4KzTVy6KUyeIt0fRPVbQ_OYgoKO8Z';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let isSignUpMode = false;
 
-// 切换 登录 / 注册 模式
 function toggleAuthMode() {
   isSignUpMode = !isSignUpMode;
   document.getElementById("authTitle").textContent = isSignUpMode ? "注册新账号" : "账号登录";
@@ -337,7 +325,6 @@ function toggleAuthMode() {
   document.getElementById("authToggleBtn").textContent = isSignUpMode ? "立即登录" : "立即注册";
 }
 
-// 处理登录/注册按钮
 async function handleAuth() {
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value.trim();
@@ -353,13 +340,11 @@ async function handleAuth() {
 
   try {
     if (isSignUpMode) {
-      // 注册账号
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      const { error } = await supabaseClient.auth.signUp({ email, password });
       if (error) throw error;
       alert("注册成功！若开启了邮箱验证，请先查收邮件确认。否则可直接尝试登录。");
       toggleAuthMode();
     } else {
-      // 登录账号
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       initAppSession(data.user);
@@ -372,7 +357,6 @@ async function handleAuth() {
   }
 }
 
-// 退出登录
 async function handleLogout() {
   await supabaseClient.auth.signOut();
   currentUser = null;
@@ -380,21 +364,17 @@ async function handleLogout() {
   document.getElementById("authSection").classList.remove("hidden");
 }
 
-// 初始化会话并切换至主应用界面
 function initAppSession(user) {
   currentUser = user;
   document.getElementById("userEmailTag").textContent = user.email;
   document.getElementById("authSection").classList.add("hidden");
   document.getElementById("appSection").classList.remove("hidden");
-  
-  // 按照用户 ID 加载隔离的本地存储
   loadUserData();
   calc();
   renderLog();
   loadCfg();
 }
 
-// Supabase 初始化状态检测
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     initAppSession(session.user);
@@ -405,10 +385,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   }
 });
 
-
-/* ================= 本地中式食物库（每100g可食部） ================= */
 const FOODS = [
-// 主食
 ["米饭（蒸，熟）",116,2.6,0.3,25.9,"一碗",200,"主食"],["米饭（生米）",346,7.4,0.8,77.9,"一杯",180,"主食"],
 ["杂粮饭（熟）",120,3.5,0.8,25.0,"一碗",200,"主食"],["白粥",46,1.1,0.2,9.9,"一碗",300,"主食"],
 ["小米粥",46,1.4,0.4,8.4,"一碗",300,"主食"],["馒头",223,7.0,1.1,47.0,"一个",100,"主食"],
@@ -426,7 +403,6 @@ const FOODS = [
 ["玉米（鲜，煮）",106,4.0,1.2,22.8,"一根",200,"主食"],["山药",57,1.9,0.2,12.4,"一根",150,"主食"],
 ["南瓜",22,0.7,0.1,5.3,"一块",150,"主食"],["燕麦片（干）",377,15.0,6.7,61.0,"一份",40,"主食"],
 ["藜麦（熟）",120,4.4,1.9,21.3,"一份",150,"主食"],
-// 肉蛋
 ["鸡胸肉（生）",133,19.4,5.0,2.5,"一块",150,"肉蛋"],["鸡胸肉（水煮）",118,23.0,1.5,0.0,"一块",120,"肉蛋"],
 ["鸡腿（带皮，生）",181,17.0,12.0,0.5,"一个",100,"肉蛋"],["鸡翅（烤）",194,17.0,11.0,4.0,"一个",40,"肉蛋"],
 ["炸鸡（原味鸡块）",250,20.0,15.0,8.0,"一块",100,"肉蛋"],["猪里脊（生）",155,20.2,7.9,0.7,"一份",100,"肉蛋"],
@@ -440,21 +416,18 @@ const FOODS = [
 ["鸡蛋",144,13.3,8.8,2.8,"一个",50,"肉蛋"],["水煮蛋",147,13.5,9.5,1.5,"一个",50,"肉蛋"],
 ["煎蛋",209,14.0,15.0,2.0,"一个",50,"肉蛋"],["蛋清",60,11.6,0.1,3.1,"一个",33,"肉蛋"],
 ["蛋黄",328,15.2,28.2,3.4,"一个",17,"肉蛋"],["咸鸭蛋",190,12.7,12.7,6.0,"一个",70,"肉蛋"],
-// 水产
 ["草鱼",113,16.6,5.2,0.0,"一份",150,"水产"],["鲈鱼",105,18.6,3.4,0.0,"一条",300,"水产"],
 ["三文鱼",139,17.2,7.8,0.0,"一份",100,"水产"],["鳕鱼",88,20.4,0.5,0.0,"一份",120,"水产"],
 ["带鱼",127,17.7,4.9,3.1,"一份",100,"水产"],["金枪鱼罐头（水浸）",116,25.5,0.8,0.0,"一罐",120,"水产"],
 ["基围虾",101,18.2,1.4,3.9,"10只",100,"水产"],["虾仁",93,18.6,0.8,2.8,"一份",100,"水产"],
 ["蟹（河蟹）",103,17.5,2.6,2.3,"一只",150,"水产"],["鱿鱼",84,17.0,1.4,0.0,"一份",100,"水产"],
 ["蛤蜊",62,10.1,1.1,2.8,"一份",150,"水产"],["扇贝",60,11.1,0.6,2.6,"一个",30,"水产"],
-// 豆奶
 ["北豆腐",116,12.2,4.8,4.2,"一块",200,"豆奶"],["南豆腐",87,6.2,3.6,4.8,"一块",200,"豆奶"],
 ["豆腐干",197,16.2,3.6,11.5,"一块",40,"豆奶"],["腐竹",459,44.6,21.7,22.3,"一份",50,"豆奶"],
 ["豆浆（无糖）",31,3.0,1.6,1.2,"一杯",250,"豆奶"],["黄豆（干）",390,35.0,16.0,34.2,"一份",50,"豆奶"],
 ["毛豆（煮）",131,13.1,5.0,10.5,"一份",100,"豆奶"],["牛奶（全脂）",54,3.0,3.2,3.4,"一杯",250,"豆奶"],
 ["脱脂牛奶",33,3.4,0.1,4.8,"一杯",250,"豆奶"],["酸奶（全脂加糖）",72,3.2,2.7,9.3,"一杯",150,"豆奶"],
 ["希腊酸奶（无糖）",59,10.0,0.4,3.6,"一杯",150,"豆奶"],["奶酪（切达）",402,25.0,33.0,1.3,"一片",20,"豆奶"],
-// 蔬菜
 ["大白菜",20,1.5,0.1,3.2,"一份",200,"蔬菜"],["生菜",16,1.4,0.2,2.0,"一份",150,"蔬菜"],
 ["菠菜",28,2.6,0.3,4.5,"一份",200,"蔬菜"],["西兰花",36,4.1,0.6,4.3,"一份",150,"蔬菜"],
 ["黄瓜",16,0.8,0.2,2.9,"一根",200,"蔬菜"],["番茄",20,0.9,0.2,4.0,"一个",150,"蔬菜"],
@@ -467,16 +440,15 @@ const FOODS = [
 ["芹菜",22,1.2,0.2,4.5,"一份",150,"蔬菜"],["韭菜",26,2.4,0.4,4.6,"一份",100,"蔬菜"],
 ["芦笋",22,1.4,0.1,4.9,"一份",100,"蔬菜"],["秋葵",37,2.0,0.1,7.1,"一份",100,"蔬菜"],
 ["莲藕",73,1.9,0.2,16.4,"一份",150,"蔬菜"],["炒青菜（油炒）",80,1.8,6.5,3.5,"一盘",200,"蔬菜"],
-// 水果
 ["苹果",54,0.2,0.2,13.5,"一个",200,"水果"],["香蕉",93,1.4,0.2,22.0,"一根",120,"水果"],
 ["橙子",48,0.8,0.2,11.1,"一个",200,"水果"],["葡萄",45,0.5,0.2,10.3,"一串",200,"水果"],
-["西瓜",31,0.5,0.1,7.9,"一块",300,"水果"],["梨",51,0.3,0.1,13.1,"一个",200,"水果"],["桃",42,0.9,0.1,10.9,"一个",200,"水果"],["草莓",32,1.0,0.2,7.1,"一份",150,"水果"],
+["西瓜",31,0.5,0.1,7.9,"一块",300,"水果"],["梨",51,0.3,0.1,13.1,"一个",200,"水果"],
+["桃",42,0.9,0.1,10.9,"一个",150,"水果"],["草莓",32,1.0,0.2,7.1,"一份",150,"水果"],
 ["蓝莓",57,0.7,0.3,14.5,"一份",100,"水果"],["猕猴桃",61,0.8,0.6,14.5,"一个",90,"水果"],
 ["芒果",60,0.6,0.2,15.0,"一个",200,"水果"],["葡萄柚",33,0.7,0.1,8.4,"一个",250,"水果"],
 ["菠萝",44,0.5,0.1,10.8,"一块",150,"水果"],["车厘子",63,1.1,0.2,16.0,"一份",150,"水果"],
 ["荔枝",71,0.9,0.2,16.6,"一份",150,"水果"],["火龙果",55,1.1,0.4,13.0,"一个",300,"水果"],
 ["牛油果",171,2.0,15.3,7.4,"一个",150,"水果"],
-// 坚果油脂
 ["核桃仁",646,14.9,58.8,19.1,"一份",20,"坚果"],["杏仁",578,21.2,49.4,21.6,"一份",20,"坚果"],
 ["腰果",559,17.3,36.7,41.6,"一份",20,"坚果"],["花生（炒）",589,21.7,48.0,23.8,"一份",30,"坚果"],
 ["葵花籽",606,22.6,52.8,17.3,"一份",30,"坚果"],["芝麻",517,19.1,46.1,24.0,"一勺",10,"坚果"],
@@ -484,7 +456,6 @@ const FOODS = [
 ["黄油",888,1.4,98.0,0.0,"一勺",10,"油脂"],["白砂糖",400,0.0,0.0,99.9,"一勺",8,"油脂"],
 ["蜂蜜",321,0.4,1.9,75.6,"一勺",15,"油脂"],["沙拉酱",680,1.4,76.0,3.1,"一勺",15,"油脂"],
 ["番茄酱",81,4.9,0.2,16.9,"一勺",15,"油脂"],["酱油",63,5.6,0.1,10.1,"一勺",15,"油脂"],
-// 饮品零食
 ["可乐",43,0.0,0.0,10.8,"一罐",330,"饮品"],["无糖可乐",0.3,0.0,0.0,0.1,"一罐",330,"饮品"],
 ["橙汁",45,0.7,0.2,10.2,"一杯",250,"饮品"],["奶茶（全糖）",85,0.8,2.5,15.0,"一杯",500,"饮品"],
 ["拿铁（全脂无糖）",47,3.2,2.4,3.6,"一杯",350,"饮品"],["美式咖啡",2,0.1,0.0,0.3,"一杯",350,"饮品"],
@@ -495,14 +466,13 @@ const FOODS = [
 ["奶油蛋糕",347,4.5,15.0,48.0,"一块",100,"零食"],["冰淇淋",127,2.4,5.3,17.3,"一个球",60,"零食"],
 ["方便面（含调料）",470,9.5,21.0,60.0,"一包",100,"零食"],["披萨",266,11.0,10.0,32.0,"一片",100,"快餐"],
 ["巨无霸汉堡",256,12.0,13.0,23.0,"一个",215,"快餐"],["薯条",312,3.5,15.0,41.0,"中份",110,"快餐"],
-// 中式菜肴
 ["番茄炒蛋",100,5.5,7.0,4.5,"一盘",300,"菜肴"],["宫保鸡丁",150,11.0,8.0,8.0,"一盘",300,"菜肴"],
 ["麻婆豆腐",110,7.0,8.0,4.0,"一盘",300,"菜肴"],["红烧鱼",145,15.0,7.0,5.0,"一盘",250,"菜肴"],
 ["可乐鸡翅",190,15.0,9.0,12.0,"一盘",250,"菜肴"],["水煮牛肉",160,13.0,10.0,5.0,"一盘",300,"菜肴"],
-["黄焖鸡米饭",130,7.0,5.5,14.0,"一份",450,"菜肴"],["沙县拌面",200,6.5,7.0,28.0,"一份",300,"菜肴"],["麻辣香锅",180,8.0,12.0,10.0,"一份",400,"菜肴"],["火锅（清汤，食材均计）",150,10.0,9.0,8.0,"一顿",600,"菜肴"]
+["黄焖鸡米饭",130,7.0,5.5,14.0,"一份",450,"菜肴"],["沙县拌面",200,6.5,7.0,28.0,"一份",300,"菜肴"],
+["麻辣香锅",180,8.0,12.0,10.0,"一份",400,"菜肴"],["火锅（清汤，食材均计）",150,10.0,9.0,8.0,"一顿",600,"菜肴"]
 ];
 
-/* ================= 状态与数据加载 ================= */
 let gender="male", goal="maintain", target=0, bmrV=0, tdeeV=0;
 let src="local", selected=null;
 let logs = [];
@@ -523,8 +493,8 @@ function loadUserData() {
   custom = JSON.parse(localStorage.getItem(foodKey) || "[]");
 
   if(!localStorage.getItem(dateKey) || localStorage.getItem(dateKey) !== today){
-    logs = []; 
-    localStorage.setItem(dateKey, today); 
+    logs = [];
+    localStorage.setItem(dateKey, today);
     localStorage.setItem(logKey, "[]");
   }
 }
@@ -551,7 +521,6 @@ function setSrc(s){
   document.getElementById("results").innerHTML = '<div class="empty">输入关键词开始搜索</div>';
 }
 
-/* ================= 搜索 ================= */
 let timer=null;
 function onSearch(){
   clearTimeout(timer);
@@ -636,6 +605,7 @@ function pickOff(name,k,p,f,c){
   selected={name:name,kcal:k,p:p,f:f,c:c};
   showSel("在线数据（每100g）");
 }
+
 function pickOffEsc(name,k,p,f,c){ pickOff(decodeURIComponent(name),k,p,f,c); }
 
 function showSel(tip){
@@ -644,7 +614,6 @@ function showSel(tip){
     "已选择：<b>"+s.name+"</b>（"+tip+"） 每100g："+s.kcal+" 千卡 · 蛋白 "+s.p+"g · 脂肪 "+s.f+"g · 碳水 "+s.c+"g";
 }
 
-/* ================= 记录 ================= */
 function addFood(){
   if(!selected){ alert("请先选择一种食物"); return; }
   const g=+document.getElementById("grams").value||0;
@@ -654,10 +623,10 @@ function addFood(){
   renderLog();
 }
 
-function delFood(i){ 
-  logs.splice(i,1); 
+function delFood(i){
+  logs.splice(i,1);
   saveUserData();
-  renderLog(); 
+  renderLog();
 }
 
 function renderLog(){
@@ -697,7 +666,6 @@ function renderLog(){
   document.getElementById("advice").innerHTML=tip;
 }
 
-/* ================= 拍照识别营养成分表 ================= */
 let ocrReady=false, ocrLoading=false, engine="local";
 
 function curModel(){
@@ -868,7 +836,7 @@ async function ensureTesseract(){
       setStatus("正在加载识别引擎…（"+u.split("/")[2]+"）");
       await loadScript(u);
       if(window.Tesseract){ ocrReady=true; ocrLoading=false; return true; }
-    }catch(e){ /* 换下一个 CDN */ }
+    }catch(e){}
   }
   ocrLoading=false;
   setStatus("识别引擎加载失败，请检查网络；你也可以直接把营养成分表的文字粘贴到下方文本框后点「从文字中解析」。");
@@ -952,21 +920,23 @@ function syncFromKj(){
   const kj=parseFloat(document.getElementById("fKj").value);
   if(!isNaN(kj)) document.getElementById("fKcal").value=Math.round(kj/4.184*10)/10;
 }
+
 function syncFromKcal(){
   const k=parseFloat(document.getElementById("fKcal").value);
   if(!isNaN(k)) document.getElementById("fKj").value=Math.round(k*4.184);
 }
+
 function autoKcal(){
   const p=+document.getElementById("fP").value||0, f=+document.getElementById("fF").value||0, c=+document.getElementById("fC").value||0;
   if(!document.getElementById("fKcal").value && (p||f||c))
     document.getElementById("fKcal").value=Math.round((p*4+c*4+f*9)*10)/10;
 }
+
 function clearForm(){
   ["fName","fKcal","fKj","fP","fF","fC","fNa","fUnit"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("fUnitG").value=100;
 }
 
-/* ---- 自建食物库 ---- */
 function saveCustom(){
   const name=document.getElementById("fName").value.trim();
   let kcal=parseFloat(document.getElementById("fKcal").value);
@@ -986,7 +956,7 @@ function saveCustom(){
 
 function delCustom(i){
   if(!confirm("删除「"+custom[i].name+"」？")) return;
-  custom.splice(i,1); 
+  custom.splice(i,1);
   saveUserData();
   renderCustom();
 }
@@ -1030,15 +1000,16 @@ function importFoods(e){
   r.readAsText(file);
 }
 
-/* ================= 我的数据 ================= */
 document.querySelectorAll("#genderSeg button").forEach(b=>{
   b.onclick=()=>{ document.querySelectorAll("#genderSeg button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active"); gender=b.dataset.gender; calc(); };
 });
+
 document.querySelectorAll("#goalSeg button").forEach(b=>{
   b.onclick=()=>{ document.querySelectorAll("#goalSeg button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active"); goal=b.dataset.goal; calc(); };
 });
+
 ["age","height","weight","activity"].forEach(id=>document.getElementById(id).addEventListener("input",calc));
 
 function calc(){
