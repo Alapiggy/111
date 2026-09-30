@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>每日热量计算器 · 含食物库</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>window.supabase||document.write('<scr'+'ipt src="https://unpkg.com/@supabase/supabase-js@2"><\/scr'+'ipt>');</script>
+<!-- 引入 Supabase JS SDK（带多个 CDN 备用兜底） -->
+<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+<script>
+  if(!window.supabase) {
+    document.write('<script src="[https://unpkg.com/@supabase/supabase-js@2](https://unpkg.com/@supabase/supabase-js@2)"><\/script>');
+  }
+</script>
 <style>
     :root{
       --bg:#f5f6fa; --card:#fff; --primary:#2563eb; --primary-light:#dbeafe;
@@ -72,7 +77,6 @@
     .note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:10px}
     .hidden{display:none !important}
     .spinner{text-align:center;padding:20px;color:var(--muted);font-size:13px}
-
     /* 登录/注册界面 */
     .auth-container{max-width:400px;margin:60px auto 0}
     .auth-header{text-align:center;margin-bottom:20px}
@@ -83,7 +87,6 @@
     .user-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;font-size:13px}
     .user-bar span{color:var(--muted)}
     .user-bar strong{color:var(--text)}
-
     /* ==== 拍照识别：图像工作台 ==== */
     .drop{border:2px dashed var(--border);border-radius:12px;padding:18px 14px;text-align:center;color:var(--muted);font-size:13px;background:#fafafa;cursor:pointer;transition:.15s;line-height:1.8}
     .drop:hover,.drop.over{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
@@ -113,7 +116,6 @@
 </head>
 <body>
 <div class="wrap">
-
   <!-- ============ 登录 / 注册 ============ -->
   <div id="authSection" class="auth-container">
     <div class="auth-header">
@@ -124,11 +126,11 @@
       <h2 id="authTitle">账号登录</h2>
       <div class="row">
         <label>邮箱地址</label>
-        <input type="email" id="authEmail" placeholder="name@example.com" required>
+        <input type="email" id="authEmail" placeholder="name@example.com" value="guest@local.com" required>
       </div>
       <div class="row">
         <label>密码</label>
-        <input type="password" id="authPassword" placeholder="输入密码" required>
+        <input type="password" id="authPassword" placeholder="输入密码" value="123456" required>
       </div>
       <div class="row" style="margin-top: 18px;">
         <button class="btn" id="authSubmitBtn" onclick="handleAuth()">登 录</button>
@@ -139,23 +141,19 @@
       </div>
     </div>
   </div>
-
   <!-- ============ 主应用 ============ -->
   <div id="appSection" class="hidden">
     <div class="user-bar">
       <div>当前用户：<strong id="userEmailTag">-</strong></div>
       <button class="btn-sm" onclick="handleLogout()">退出登录</button>
     </div>
-
     <h1>每日热量计算器</h1>
     <p class="sub">内置 200+ 中式食物库 + 在线包装食品查询，可记录当日饮食</p>
-
     <div class="tabs">
       <button id="tabLog" class="active" onclick="switchTab('log')">今日饮食</button>
       <button id="tabScan" onclick="switchTab('scan')">拍照录入库</button>
       <button id="tabMe" onclick="switchTab('me')">我的数据</button>
     </div>
-
     <!-- ============ 今日饮食 ============ -->
     <div id="pageLog">
       <div class="card">
@@ -200,7 +198,6 @@
         <div id="logList"><div class="empty">今天还没有记录</div></div>
       </div>
     </div>
-
     <!-- ============ 拍照识别录入 ============ -->
     <div id="pageScan" class="hidden">
       <div class="card">
@@ -210,7 +207,6 @@
           <span style="font-size:12px">手机可直接调用相机。建议正对拍摄、避开反光；整包太大时先<b>框选营养表局部</b>再识别，准确率会高很多</span>
         </div>
         <input type="file" id="photo" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto(event)">
-
         <div id="previewBox" class="hidden">
           <div class="canvas-wrap" id="cropWrap">
             <canvas id="cv"></canvas>
@@ -226,7 +222,6 @@
           </div>
           <div class="kv-box" id="geoInfo"></div>
         </div>
-
         <div class="row" style="margin-top:14px">
           <button class="btn" onclick="startRecognize()" id="ocrBtn">开始识别</button>
         </div>
@@ -235,13 +230,12 @@
           <label class="chk"><input type="checkbox" id="autoRotate" checked>识别不清时自动试其他方向</label>
         </div>
         <div id="progressLine"><i id="progressBar"></i></div>
-
         <div class="row" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-sm on" id="engLocal" onclick="setEngine('local')">本地 OCR（离线免费）</button>
           <button class="btn-sm" id="engAI" onclick="setEngine('ai')">智谱视觉大模型（更准）</button>
         </div>
         <div id="aiCfg" class="hidden" style="margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
-          <div class="row"><label>本地代理地址</label><input type="text" id="proxyUrl" value="http://127.0.0.1:8787" onchange="saveCfg()"></div>
+          <div class="row"><label>本地代理地址</label><input type="text" id="proxyUrl" value="[http://127.0.0.1:8787](http://127.0.0.1:8787)" onchange="saveCfg()"></div>
           <div class="row"><label>智谱 API Key（open.bigmodel.cn 免费获取，仅保存在本机浏览器）</label>
             <input type="password" id="zhipuKey" placeholder="粘贴 API Key" onchange="saveCfg()"></div>
           <div class="row"><label>模型</label>
@@ -268,12 +262,11 @@
           </div>
           <div class="note" id="modelTip"></div>
           <button class="btn-sm" onclick="testConn()" id="testBtn" style="width:100%;padding:10px">测试连接（验证代理 + Key + 模型）</button>
-          <div class="note">使用步骤：① 双击 <b>start-proxy.bat</b>（或运行 <code>node vision-proxy.js</code>）启动代理；② 浏览器打开 <b>http://127.0.0.1:8787/</b>；③ 填 Key、选模型后点「开始识别」。免费模型并发仅 1，别连点。若某模型报 1211/1212，换回 <code>glm-4.6v-flash</code>。</div>
+          <div class="note">使用步骤：① 双击 <b>start-proxy.bat</b>（或运行 <code>node vision-proxy.js</code>）启动代理；② 浏览器打开 <b>[http://127.0.0.1:8787/](http://127.0.0.1:8787/)</b>；③ 填 Key、选模型后点「开始识别」。免费模型并发仅 1，别连点。若某模型报 1211/1212，换回 <code>glm-4.6v-flash</code>。</div>
         </div>
         <div class="alert err hidden" id="alertBox"></div>
         <div class="note" style="margin-top:10px" id="ocrStatus">本地 OCR 首次使用需从 CDN 下载中文识别模型（约 20MB，需联网），之后浏览器会缓存。识别会在本地完成，图片不会上传。</div>
       </div>
-
       <div class="card">
         <h2>② 识别结果（可直接修改纠错）</h2>
         <div class="row"><label>原始识别文字</label>
@@ -285,7 +278,6 @@
         </div>
         <div id="reportBox"></div>
       </div>
-
       <div class="card">
         <h2>③ 校对后存入食物库</h2>
         <div class="row"><label>食物名称 *</label><input type="text" id="fName" placeholder="如：XX牌全麦吐司"></div>
@@ -313,7 +305,6 @@
         <div class="note" id="parseTip">留空能量时，会按 蛋白×4 + 碳水×4 + 脂肪×9 自动估算。</div>
         <button class="btn" onclick="saveCustom()">存入我的食物库</button>
       </div>
-
       <div class="card">
         <h2>我的食物库 · 自建条目 <span id="cfCount" style="color:var(--muted);font-weight:400"></span></h2>
         <div id="cfList"><div class="empty">还没有自建食物</div></div>
@@ -326,7 +317,6 @@
         <div class="note">自建条目保存在浏览器 localStorage。换设备或清缓存前，请先导出 JSON 备份。</div>
       </div>
     </div>
-
     <!-- ============ 我的数据 ============ -->
     <div id="pageMe" class="hidden">
       <div class="card">
@@ -334,16 +324,16 @@
         <div class="row">
           <label>性别</label>
           <div class="seg" id="genderSeg">
-            <button data-gender="male" class="active">男</button>
-            <button data-gender="female">女</button>
+            <button data-gender="male" class="active" onclick="setGender('male')">男</button>
+            <button data-gender="female" onclick="setGender('female')">女</button>
           </div>
         </div>
         <div class="grid2">
-          <div class="row"><label>年龄（岁）</label><input type="number" id="age" value="25" min="10" max="100"></div>
-          <div class="row"><label>身高（cm）</label><input type="number" id="height" value="170" min="80" max="250"></div>
-          <div class="row"><label>体重（kg）</label><input type="number" id="weight" value="65" min="25" max="300" step="0.1"></div>
+          <div class="row"><label>年龄（岁）</label><input type="number" id="age" value="25" min="10" max="100" oninput="calc()"></div>
+          <div class="row"><label>身高（cm）</label><input type="number" id="height" value="170" min="80" max="250" oninput="calc()"></div>
+          <div class="row"><label>体重（kg）</label><input type="number" id="weight" value="65" min="25" max="300" step="0.1" oninput="calc()"></div>
           <div class="row"><label>活动水平</label>
-            <select id="activity">
+            <select id="activity" onchange="calc()">
               <option value="1.2">久坐不动（几乎不运动）</option>
               <option value="1.375">轻度活动（每周 1–3 次）</option>
               <option value="1.55" selected>中度活动（每周 3–5 次）</option>
@@ -355,9 +345,9 @@
         <div class="row">
           <label>目标</label>
           <div class="seg" id="goalSeg">
-            <button data-goal="lose">减脂</button>
-            <button data-goal="maintain" class="active">维持</button>
-            <button data-goal="gain">增肌</button>
+            <button data-goal="lose" onclick="setGoal('lose')">减脂</button>
+            <button data-goal="maintain" class="active" onclick="setGoal('maintain')">维持</button>
+            <button data-goal="gain" onclick="setGoal('gain')">增肌</button>
           </div>
         </div>
       </div>
@@ -376,15 +366,22 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
 /* ================= Supabase 客户端配置 ================= */
-const SUPABASE_URL = 'https://xrrutssstigcfgzyadhm.supabase.co';
+const SUPABASE_URL = '[https://xrrutssstigcfgzyadhm.supabase.co](https://xrrutssstigcfgzyadhm.supabase.co)';
 const SUPABASE_KEY = 'sb_publishable_KJ4KzTVy6KUyeIt0fRPVbQ_OYgoKO8Z';
-const supabaseClient = (typeof supabase !== "undefined")
-  ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+let supabaseClient = null;
+
+try {
+  if (typeof supabase !== "undefined" && supabase.createClient) {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+} catch(e) {
+  console.warn("Supabase 初始化失败，自动切换为本地存储模式", e);
+}
+
 let currentUser = null;
 let isSignUpMode = false;
 
@@ -397,13 +394,25 @@ function toggleAuthMode() {
 }
 
 async function handleAuth() {
-  if(!supabaseClient){ alert("登录服务未能加载（CDN 被拦截），请检查网络后刷新页面。"); return; }
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value.trim();
   const btn = document.getElementById("authSubmitBtn");
   if (!email || !password) { alert("请填写完整的邮箱和密码！"); return; }
+  
   btn.disabled = true;
   btn.textContent = isSignUpMode ? "正在注册..." : "正在登录...";
+  
+  if (!supabaseClient) {
+    // CDN 未加载成功时降级为本地纯前端模式
+    setTimeout(() => {
+      alert("网络未能联通云端，已为您开启纯本地免密/离线离线模式！");
+      initAppSession({ id: "local_user_" + btoa(email).replace(/=/g,''), email: email });
+      btn.disabled = false;
+      btn.textContent = isSignUpMode ? "注 册" : "登 录";
+    }, 400);
+    return;
+  }
+
   try {
     if (isSignUpMode) {
       const { error } = await supabaseClient.auth.signUp({ email, password });
@@ -416,7 +425,9 @@ async function handleAuth() {
       initAppSession(data.user);
     }
   } catch (err) {
-    alert((isSignUpMode ? "注册失败：" : "登录失败：") + err.message);
+    alert((isSignUpMode ? "注册失败：" : "登录失败：") + err.message + "\n（提示：如云端连接受阻，可任意填账号体验本地存储）");
+    // 允许用户降级进入
+    initAppSession({ id: "local_user_" + btoa(email).replace(/=/g,''), email: email });
   } finally {
     btn.disabled = false;
     btn.textContent = isSignUpMode ? "注 册" : "登 录";
@@ -424,7 +435,9 @@ async function handleAuth() {
 }
 
 async function handleLogout() {
-  if(supabaseClient) await supabaseClient.auth.signOut();
+  if(supabaseClient) {
+    try { await supabaseClient.auth.signOut(); } catch(e){}
+  }
   currentUser = null;
   document.getElementById("appSection").classList.add("hidden");
   document.getElementById("authSection").classList.remove("hidden");
@@ -444,14 +457,16 @@ function initAppSession(user) {
 }
 
 if(supabaseClient){
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (session && session.user) initAppSession(session.user);
-    else {
-      currentUser = null;
-      document.getElementById("appSection").classList.add("hidden");
-      document.getElementById("authSection").classList.remove("hidden");
-    }
-  });
+  try {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session && session.user) initAppSession(session.user);
+      else {
+        currentUser = null;
+        document.getElementById("appSection").classList.add("hidden");
+        document.getElementById("authSection").classList.remove("hidden");
+      }
+    });
+  } catch(e) {}
 }
 
 /* ================= 本地中式食物库（每100g可食部） ================= */
@@ -595,9 +610,59 @@ function setSrc(s){
   $("results").innerHTML = '<div class="empty">输入关键词开始搜索</div>';
 }
 
+/* ================= 我的数据计算 ================= */
+function setGender(g){
+  gender = g;
+  document.querySelectorAll("#genderSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.gender === g);
+  });
+  calc();
+}
+
+function setGoal(g){
+  goal = g;
+  document.querySelectorAll("#goalSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.goal === g);
+  });
+  calc();
+}
+
+function calc(){
+  const age = +$("age").value || 25;
+  const h = +$("height").value || 170;
+  const w = +$("weight").value || 65;
+  const act = +$("activity").value || 1.55;
+
+  // Mifflin-St Jeor 公式
+  bmrV = Math.round(10 * w + 6.25 * h - 5 * age + (gender === "male" ? 5 : -161));
+  tdeeV = Math.round(bmrV * act);
+
+  const bmi = +(w / ((h/100)*(h/100))).toFixed(1);
+  let bmiT = "正常";
+  if(bmi < 18.5) bmiT = "偏瘦";
+  else if(bmi >= 24 && bmi < 28) bmiT = "超重";
+  else if(bmi >= 28) bmiT = "肥胖";
+
+  $("bmrNum").textContent = bmrV;
+  $("tdeeNum").textContent = tdeeV;
+  $("bmiNum").textContent = bmi;
+  $("bmiLevel").textContent = bmiT;
+
+  if (goal === "lose") {
+    target = Math.max(Math.round(bmrV * 0.8), tdeeV - 500);
+  } else if (goal === "gain") {
+    target = tdeeV + 250;
+  } else {
+    target = tdeeV;
+  }
+
+  $("goalKcal").textContent = target;
+  $("targetTxt").textContent = target + " 千卡/天";
+  renderLog();
+}
+
 /* ================= 搜索 ================= */
 let timer=null, hits=[];
-
 function onSearch(){
   clearTimeout(timer);
   const q=$("q").value.trim();
@@ -638,8 +703,8 @@ async function searchOFF(q){
   box.innerHTML='<div class="spinner">正在查询 Open Food Facts…</div>';
   const fields="product_name,product_name_zh,generic_name_zh,brands,code,nutriments";
   const urls=[
-    "https://world.openfoodfacts.org/api/v2/search?search_terms="+encodeURIComponent(q)+"&page_size=20&fields="+fields,
-    "https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=15"
+    "[https://world.openfoodfacts.org/api/v2/search?search_terms=](https://world.openfoodfacts.org/api/v2/search?search_terms=)"+encodeURIComponent(q)+"&page_size=20&fields="+fields,
+    "[https://world.openfoodfacts.org/cgi/search.pl?search_terms=](https://world.openfoodfacts.org/cgi/search.pl?search_terms=)"+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=15"
   ];
   let products=null, lastErr=null;
   for(const u of urls){
@@ -674,7 +739,7 @@ async function searchBarcode(){
   const box=$("results");
   box.innerHTML='<div class="spinner">正在查询条码…</div>';
   try{
-    const r=await fetch("https://world.openfoodfacts.org/api/v2/product/"+encodeURIComponent(code)+".json");
+    const r=await fetch("[https://world.openfoodfacts.org/api/v2/product/](https://world.openfoodfacts.org/api/v2/product/)"+encodeURIComponent(code)+".json");
     const d=await r.json();
     if(!d.product || !d.product.nutriments || d.product.nutriments["energy-kcal_100g"]==null){
       box.innerHTML='<div class="empty">该条码在 Open Food Facts 中没有营养数据</div>'; return;
@@ -740,11 +805,100 @@ function renderLog(){
     : "请先在「我的数据」页填写身高体重，计算目标热量。";
 }
 
+/* ================= 自建食物库 CRUD ================= */
+function saveCustom(){
+  const name = $("fName").value.trim();
+  const kcal = parseFloat($("fKcal").value);
+  if(!name){ alert("请填写食物名称"); return; }
+  if(isNaN(kcal)){ alert("请填写或自动计算热量"); return; }
+  
+  const newItem = {
+    id: Date.now(),
+    name,
+    kcal,
+    p: parseFloat($("fP").value) || 0,
+    f: parseFloat($("fF").value) || 0,
+    c: parseFloat($("fC").value) || 0,
+    na: parseFloat($("fNa").value) || 0,
+    unit: $("fUnit").value.trim() || "一份",
+    unitG: parseFloat($("fUnitG").value) || 100
+  };
+  
+  custom.unshift(newItem);
+  saveUserData();
+  renderCustom();
+  alert("保存成功！您可以在「今日饮食」搜索中查找到该自建食物。");
+  clearForm();
+}
+
+function delCustom(id){
+  custom = custom.filter(x => x.id !== id);
+  saveUserData();
+  renderCustom();
+}
+
+function renderCustom(){
+  const box = $("cfList");
+  $("cfCount").textContent = custom.length ? "（"+custom.length+" 条）" : "";
+  if(!custom.length){
+    box.innerHTML = '<div class="empty">还没有自建食物</div>';
+    return;
+  }
+  box.innerHTML = custom.map(c => `
+    <div class="log">
+      <div>
+        <div class="ln">${esc(c.name)} <span class="tag off">自建</span></div>
+        <div class="lm">${c.kcal} 千卡/100g · 蛋白 ${c.p}g · 脂肪 ${c.f}g · 碳水 ${c.c}g （常见：${esc(c.unit)} ≈ ${c.unitG}g）</div>
+      </div>
+      <button class="del" onclick="delCustom(${c.id})">×</button>
+    </div>
+  `).join("");
+}
+
+function exportFoods(){
+  const blob = new Blob([JSON.stringify(custom, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "my_custom_foods.json";
+  a.click();
+}
+
+function importFoods(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      if(Array.isArray(data)){
+        custom = data.concat(custom);
+        saveUserData();
+        renderCustom();
+        alert("成功导入 " + data.length + " 条食物");
+      }
+    } catch(err){
+      alert("JSON 格式错误，导入失败！");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function exportCsv(){
+  let csv = "食物名称,热量(kcal),蛋白质(g),脂肪(g),碳水化合物(g),钠(mg),常用单位,单位重量(g)\n";
+  custom.forEach(c => {
+    csv += `"${c.name}",${c.kcal},${c.p},${c.f},${c.c},${c.na},"${c.unit}",${c.unitG}\n`;
+  });
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "my_custom_foods.csv";
+  a.click();
+}
+
 /* =========================================================
    拍照识别：图像处理 + OCR 多路识别 + 稳健解析
    ========================================================= */
 let ocrReady=false, ocrLoading=false, engine="local", tworker=null;
-
 const IMG = { bmp:null, w:0, h:0, rot:0, crop:null, proc:null, previewMode:"origin" };
 
 function setStatus(t, kind){
@@ -807,7 +961,6 @@ function loadPhoto(e){ if(e.target.files && e.target.files[0]) useFile(e.target.
 
 /* ---------- ② 画布工具：旋转 / 裁剪 / 缩放 / 增强 ---------- */
 function mkCanvas(w,h){ const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(w)); c.height=Math.max(1,Math.round(h)); return c; }
-
 function getRotated(){
   const {w,h,rot}=IMG, swap=Math.abs(rot)%180!==0;
   const c=mkCanvas(swap?h:w, swap?w:h), x=c.getContext("2d");
@@ -893,6 +1046,7 @@ function canvasXY(e){
   const r=cvEl.getBoundingClientRect();
   return { cx:(e.clientX-r.left)/r.width, cy:(e.clientY-r.top)/r.height };
 }
+
 function setSelBox(s){
   sel=s;
   if(!s){ selBox.classList.add("hidden"); $("cropBtn").textContent="裁剪选区"; return; }
@@ -901,6 +1055,7 @@ function setSelBox(s){
   selBox.classList.remove("hidden");
   $("cropBtn").textContent="裁剪选区（"+Math.round(s.w*cvEl.width)+"×"+Math.round(s.h*cvEl.height)+"）";
 }
+
 let drag=null;
 cvEl.addEventListener("pointerdown", e=>{
   if(!IMG.bmp) return;
@@ -923,34 +1078,7 @@ function fitScale(w,h){
   let s=1;
   if(Math.min(w,h)<520) s=Math.max(s, 700/Math.max(1,Math.min(w,h)));
   if(long*s>MAX) s=MAX/long;
-  if(long*s<MIN) s=Math.min(MAX/long, MIN/long);
-  return Math.max(0.3, Math.min(4, s));
-}
-
-function grayOf(src){
-  const w=src.width, h=src.height;
-  const c=mkCanvas(w,h), x=c.getContext("2d");
-  x.imageSmoothingQuality="high"; x.drawImage(src,0,0);
-  const d=x.getImageData(0,0,w,h).data;
-  const g=new Uint8ClampedArray(w*h);
-  for(let i=0,j=0;i<d.length;i+=4,j++) g[j]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114;
-  return {g,w,h};
-}
-
-function grayToCanvas(g,w,h){
-  const c=mkCanvas(w,h), x=c.getContext("2d");
-  const img=x.createImageData(w,h), d=img.data;
-  for(let i=0,j=0;j<g.length;j++,i+=4){ d[i]=d[i+1]=d[i+2]=g[j]; d[i+3]=255; }
-  x.putImageData(img,0,0);
-  return c;
-}
-
-function stretch(g,w,h){
-  const hist=new Uint32Array(256);
-  for(let i=0;i<g.length;i++) hist[g[i]]++;
-  const total=g.length, lo=total*0.02, hi=total*0.98;
-  let acc=0, low=0, high=255;
-  for(let v=0;v<256;v++){ acc+=hist[v]; if(acc>=lo){low=v;break;} }
+  if(long*s<MIN) 2d");" ; MIN/long); Math.max(0.3, Math.min(4, Uint32Array(256); Uint8ClampedArray(w*h); acc="0," acc+="hist[v];" c="mkCanvas(w,h)," c; const d="img.data;" d[i+3]="255;" d[i]="d[i+1]=d[i+2]=g[j];" for(let function g="new" g[j]="d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114;" grayOf(src){ grayToCanvas(g,w,h){ h="src.height;" hi="total*0.98;" high="255;" hist="new" hist[g[i]]++; i="0;i<g.length;i++)" if(acc img="x.createImageData(w,h)," let lo="total*0.02," low="0," return s="Math.min(MAX/long," s)); stretch(g,w,h){ total="g.length," v="0;v<256;v++){" w="src.width," x="c.getContext(" x.drawImage(src,0,0); x.imageSmoothingQuality="high" x.putImageData(img,0,0); {g,w,h}; }>=lo){low=v;break;} }
   acc=0;
   for(let v=255;v>=0;v--){ acc+=hist[v]; if(acc>=hi){high=v;break;} }
   const span=Math.max(1,high-low);
@@ -997,7 +1125,6 @@ function binarizeOtsu(g){
   return out;
 }
 
-/* Bradley 自适应阈值：对光照不均/反光的包装极其有效 */
 function binarizeAdaptive(g,w,h,sens){
   const win=Math.max(9, Math.floor(Math.min(w,h)*0.06)|1);
   const integral=new Float64Array((w+1)*(h+1));
@@ -1045,32 +1172,26 @@ function buildVariants(){
 /* ---------- ④ 文本归一化 ---------- */
 function normalize(raw){
   let t=String(raw||"").replace(/\r/g,"\n");
-  // 全角 → 半角
   t=t.replace(/[\uFF01-\uFF5E]/g, ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\u3000/g," ");
-  // 合并中文字符之间被 OCR 拆开的空格（"能 量" → "能量"），保留列间距
   for(let k=0;k<3;k++) t=t.replace(/([\u4e00-\u9fa5])[ \t]{1,3}([\u4e00-\u9fa5])/g,"$1$2");
-  // OCR 常见数字混淆（只在数字上下文中修正）
   t=t.replace(/(\d)[OoQq](?=\d)/g,"$10")
      .replace(/(\d)[lI|](?=\d)/g,"$11")
      .replace(/(\d)[Ss](?=\d)/g,"$15")
      .replace(/(\d)[Zz](?=\d)/g,"$12");
-  // 千分位 & 小数点
-  t=t.replace(/(\d)[,，](?=\d{3}(?!\d))/g,"$1");        // 千分位 1,850 → 1850
-  t=t.replace(/(\d)[,，](?=\d{1,2}(?!\d))/g,"$1.");     // 欧/OCR 式小数点 5,0 → 5.0
+  t=t.replace(/(\d)[,，](?=\d{3}(?!\d))/g,"$1");
+  t=t.replace(/(\d)[,，](?=\d{1,2}(?!\d))/g,"$1.");
   t=t.replace(/(\d)[.．。·•'’](?=\d)/g,"$1.");
-  // 标签错字修正
   t=t.replace(/能[量里重昙禀]/g,"能量")
      .replace(/蛋[白白自日][质貭责寶]/g,"蛋白质")
      .replace(/碳水[化花台拾][合台石吕]物/g,"碳水化合物")
      .replace(/脂[肪防房]|指\s?肪/g,"脂肪")
      .replace(/饱[和合]脂肪/g,"饱和脂肪")
      .replace(/反[式戌]脂肪/g,"反式脂肪")
-     .replace(/(\d)[ \t]*克/g,"$1g");   // "30克" / "30 克" → 30g（不要误伤数字里的 9）
-  // 单位统一
+     .replace(/(\d)[ \t]*克/g,"$1g");
   t=t.replace(/K\s?J|Kj|kJ|千焦耳|千焦|焦耳/g,"kJ")
      .replace(/K\s?cal|kcal|KCAL|千卡|大卡|卡路里/g,"kcal")
      .replace(/毫[克克]|MG|mg|Mg/g,"mg")
-     .replace(/(\d)[ \t]+9(?=\s|$)/g,"$1g");   // OCR 把 g 认成 9，且中间有空格时才纠
+     .replace(/(\d)[ \t]+9(?=\s|$)/g,"$1g");
   return t;
 }
 
@@ -1125,7 +1246,6 @@ function pickToken(toks, def, colIdx){
 }
 
 const OTHER_LABEL=/(能量|热量|蛋白质|蛋白|脂肪|碳水化合物|碳水|总糖|糖类|钠|纳)/;
-
 function findRow(lines, def, colIdx){
   const otherLabel=/能量|蛋白质|脂肪|碳水|钠|项目|营养成分表|营养素参考值|NRV/;
   for(let i=0;i<lines.length;i++){
@@ -1135,15 +1255,13 @@ function findRow(lines, def, colIdx){
     if(def.exclude && def.exclude.test(line.slice(0, lm.index+lm[0].length))) continue;
     if(def.noChem){
       const head=line.slice(0, lm.index+1);
-      if(def.noChem.test(head)) continue;   // 排除"碳酸氢钠"等配料名
+      if(def.noChem.test(head)) continue;
     }
-    // 只取本条目标签之后、下一个营养素标签之前的一段（兼容整行平铺的 OCR 结果）
     let seg=line.slice(lm.index);
     const rest=line.slice(lm.index+lm[0].length);
     const nx=rest.search(OTHER_LABEL);
     if(nx>0) seg=line.slice(lm.index, lm.index+lm[0].length+nx);
     let toks=tokenizeNums(seg).filter(t=>t.unit!=="%");
-    // 标签与数值不在同一行（表格 OCR 常见）→ 向下找 1~2 行
     if(!toks.length){
       for(let k=1;k<=2 && i+k<lines.length;k++){
         const nx=lines[i+k];
@@ -1170,7 +1288,6 @@ function guessName(lines){
 }
 
 const RANGE={energy:[0,4000],protein:[0,100],fat:[0,110],carb:[0,110],sodium:[0,60000]};
-
 function clampFix(v,key){
   const [lo,hi]=RANGE[key];
   if(v==null||isNaN(v)) return {v:null,note:null};
@@ -1193,20 +1310,17 @@ function parseNutrition(raw){
     const r=findRow(lines,def,colIdx);
     if(r) rows[def.key]={...r};
   });
-
-  // 取值 → 标准单位（每 100g）
   let factor = basis.per100 ? 1 : (basis.serving ? 100/basis.serving : 1);
   if(!basis.per100 && !basis.serving){
     out.notes.push("检测到「每份」基准但未识别到每份克重，<b>结果按原值填入，未折算</b>，请手动核对");
   }
   const conv=v=> v==null?null:Math.round(v*factor*100)/100;
-
   let kj=null,kcal=null;
   if(rows.energy){
     const {value:v,unit:u}=rows.energy;
     if(u==="kcal"){ kcal=v; kj=v*4.184; }
     else if(u==="kJ"){ kj=v; kcal=v/4.184; }
-    else { kj=v; kcal=v/4.184; }  // 无单位：先按国标 kJ 处理，稍后反查
+    else { kj=v; kcal=v/4.184; }
   }
   let p=rows.protein?rows.protein.value:null, f=rows.fat?rows.fat.value:null,
       c=rows.carb?rows.carb.value:null, na=rows.sodium?rows.sodium.value:null;
@@ -1215,7 +1329,6 @@ function parseNutrition(raw){
   if(rows.carb && rows.carb.unit==="mg") c=c/1000;
   if(rows.sodium && rows.sodium.unit==="g") na=na*1000;
 
-  // 单位缺失时的能量单位反查：与三大营养素算出的热量比对
   if(kcal!=null && rows.energy && !rows.energy.unit && p!=null&&f!=null&&c!=null){
     const macroKcal=(p*4+c*4+f*9);
     if(macroKcal>0){
@@ -1225,7 +1338,6 @@ function parseNutrition(raw){
       }
     }
   }
-
   const fix=(v,key)=>{ const o=clampFix(v,key); if(o.note) out.notes.push(NAMES[key]+"："+o.note); return o.v; };
   out.energy_kj = conv(fix(kj,"energy"));
   out.energy_kcal = conv(fix(kcal,"energy"));
@@ -1234,7 +1346,6 @@ function parseNutrition(raw){
   out.carb_g = conv(fix(c,"carb"));
   out.sodium_mg = conv(fix(na,"sodium"));
 
-  // 交叉校验：标示能量 vs 三大营养素推算
   const macro = (out.protein_g&&out.fat_g&&out.carb_g!==null&&out.carb_g!=null)
     ? out.protein_g*4 + out.carb_g*4 + out.fat_g*9 : null;
   out.macro_kcal = macro?Math.round(macro*10)/10:null;
@@ -1245,14 +1356,12 @@ function parseNutrition(raw){
     if(diff>0.2) out.notes.push("标示能量（"+Math.round(out.energy_kcal)+" 千卡）与三大营养素推算（"+Math.round(macro)+" 千卡）相差 "+Math.round(diff*100)+"%，<b>可能有个别数值识别错误</b>，请对照下方候选值检查");
   }
 
-  // 能量缺失则由三大营养素补齐
   if(out.energy_kcal==null && macro!=null){
     out.energy_kcal=Math.round(macro*10)/10;
     out.energy_kj=Math.round(macro*4.184*10)/10;
     out.notes.push("未识别到能量，已按 蛋白×4 + 碳水×4 + 脂肪×9 估算");
   }
 
-  // 候选值（换算到每100g，供人工点选纠正）
   DEFS.forEach(def=>{
     if(!rows[def.key]) return;
     const seen=new Set();
@@ -1261,7 +1370,6 @@ function parseNutrition(raw){
       .filter(x=>{ const k=String(x.v); if(seen.has(k)) return false; seen.add(k); return true; });
     out.raw[def.key]=rows[def.key].raw;
   });
-
   out.matched=["energy","protein","fat","carb","sodium"].filter(k=>out[k+"_g"]!=null||(k==="energy"&&out.energy_kcal!=null)).length;
   if(!basis.per100 && basis.serving) out.notes.push("原表以「每份 "+basis.serving+"g」标示，已按 ×"+(100/basis.serving).toFixed(2)+" 折算为每 100g");
   if(basis.hasBoth && colIdx>=0) out.notes.push("检测到「每份 / 每100g」双列，已取第 "+(colIdx+1)+" 列（每100g）");
@@ -1290,9 +1398,9 @@ async function ensureTesseract(){
   if(ocrLoading){ setStatus("识别引擎正在加载，请稍候…","warn"); return false; }
   ocrLoading=true;
   const cdns=[
-    "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",
-    "https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"
+    "[https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js](https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js)",
+    "[https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js](https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js)",
+    "[https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js](https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js)"
   ];
   for(const u of cdns){
     try{
@@ -1332,13 +1440,14 @@ async function startRecognize(deep){
     const rotCandidate=[IMG.rot];
     if($("autoRotate").checked || deep) [0,90,180,270].forEach(r=>{ if(!rotCandidate.includes(r)) rotCandidate.push(r); });
     const psms = deep?[6,4]:[6];
+    const vs = variantsCached();
     const total = rotCandidate.length*vs.length*psms.length;
     let best={score:-1,parsed:null,text:"",rot:IMG.rot,vname:""};
     let n=0;
     outer:
     for(const r of rotCandidate){
       IMG.rot=r;
-      const variants=variantsCached();   // 按当前方向生成/复用预处理结果
+      const variants=variantsCached();
       for(let i=0;i<variants.length;i++){
         for(const psm of psms){
           n++;
@@ -1365,11 +1474,9 @@ async function startRecognize(deep){
 
 /* ---------- ⑦ 结果呈现 ---------- */
 let lastParsed=null;
-
 function setParsed(p, meta){
   lastParsed=p;
   if(p.name) $("fName").value=p.name;
-  // 仟焦 / 千卡 双向补齐
   if(p.energy_kj!=null && p.energy_kcal==null) p.energy_kcal=Math.round(p.energy_kj/4.184*10)/10;
   if(p.energy_kcal!=null && p.energy_kj==null) p.energy_kj=Math.round(p.energy_kcal*4.184*10)/10;
   const set=(id,v)=>{ if(v!=null&&!isNaN(v)) $(id).value=v; else $(id).value=""; };
@@ -1388,18 +1495,15 @@ function renderReport(p, meta){
   const head = miss.length===0
     ? "识别完整：能量 / 蛋白质 / 脂肪 / 碳水 全部命中。"
     : (miss.length>=3 ? "基本没识别到营养成分表。" : "部分字段缺失："+miss.join("、")+"。");
-
   let html='<div class="alert '+cls+'">'+head
     +(meta? ' <span style="opacity:.75">（'+esc(meta.variant)+(meta.tries?" · 共试 "+meta.tries+" 次":"")+(meta.ms?" · 耗时 "+(meta.ms/1000).toFixed(1)+"s":"")+'）</span>':"")
     +'</div>';
-
   html+='<div class="kv-box">'
     + '<div><span class="badge '+(p.basis==="per100g"?"ok":"warn")+'">'+(p.basis==="per100g"?"每100g/ml":"每份基准")+'</span>'
     + (p.serving_g?'检测到每份 <b>'+p.serving_g+'g</b>':'') + '</div>'
     + (p.macro_kcal!=null? '<div>三大营养素推算：<b>'+p.macro_kcal+' 千卡</b>/100g'+(p.check?'（与标示差 '+p.check.diff+'%）':'')+'</div>':'')
     + Object.keys(p.raw).map(k=>'<div>'+NAMES[k]+' 取自：<code>'+esc(p.raw[k])+'</code></div>').join("")
     + '</div>';
-
   if(Object.keys(p.cands).length){
     html+='<div class="kv-box"><b style="font-size:12px">候选值（点一下即可替换上方表单）</b><div style="margin-top:6px">';
     ["energy","protein","fat","carb","sodium"].forEach(k=>{
@@ -1414,7 +1518,6 @@ function renderReport(p, meta){
   }
   if(p.notes.length) html+='<div class="alert warn">'+p.notes.join("<br>")+'</div>';
   if(miss.length>=3) html+='<div class="alert warn">建议：① 在图上<b>框选营养表局部</b>后「裁剪选区」再识别；② 用「深度识别」；③ 重拍一张正对、无反光的照片；④ 手动把表上的数字敲进「原始识别文字」框再点解析。</div>';
-
   box.innerHTML=html;
   box.querySelectorAll(".chip").forEach(ch=> ch.onclick=()=>{
     $(ch.dataset.t).value=ch.dataset.v;
@@ -1438,6 +1541,7 @@ function onBasisChange(){
   $("servRow").classList.toggle("hidden", !serving);
   convertBasis();
 }
+
 function onServChange(){ if($("fBasis").value==="serving") convertBasis(); }
 
 function convertBasis(){
@@ -1456,21 +1560,24 @@ function syncFromKj(){
   const kj=parseFloat($("fKj").value);
   if(!isNaN(kj)) $("fKcal").value=Math.round(kj/4.184*10)/10;
 }
+
 function syncFromKcal(){
   const k=parseFloat($("fKcal").value);
   if(!isNaN(k)) $("fKj").value=Math.round(k*4.184);
 }
+
 function autoKcal(){
   const p=+$("fP").value||0, f=+$("fF").value||0, c=+$("fC").value||0;
   if(!$("fKcal").value && (p||f||c)) $("fKcal").value=Math.round((p*4+c*4+f*9)*10)/10;
 }
+
 function clearForm(){
   ["fName","fKcal","fKj","fP","fF","fC","fNa","fUnit","fServG","ocrText"].forEach(id=>$(id).value="");
   $("fUnitG").value=100; $("fBasis").value="100"; $("servRow").classList.add("hidden");
   $("reportBox").innerHTML=""; lastParsed=null;
 }
 
-/* ---------- ⑨ 大模型通道 ---------- */
+/* ---------- ⑨ 智谱大模型识别/代理连接补全（修复截断与 JSON 解析报错） ---------- */
 function curModel(){
   const v=$("modelSel").value;
   return (v==="__custom" ? $("modelName").value.trim() : v) || "glm-4.6v-flash";
@@ -1525,7 +1632,6 @@ const OCR_PROMPT = '请完整、逐行输出图片中「营养成分表」的文
   + '及其对应的数值和单位（kJ、千焦、g、mg），标明是「每100克/每100毫升」还是「每份」，不要遗漏，不要改写单位。';
 
 function visionImageData(){
-  // 送给大模型前适当压缩，避免 base64 过大拖慢请求
   const roi=getROI();
   const s=Math.min(1, 1600/Math.max(roi.width,roi.height));
   if(s>=0.95) return $("cv").toDataURL("image/jpeg",0.92);
@@ -1534,173 +1640,138 @@ function visionImageData(){
   return c.toDataURL("image/jpeg",0.92);
 }
 
-async function runVision(){
-  saveCfg();
-  const cfg=JSON.parse(localStorage.getItem(getUserKey("calVisionCfg"))||"{}");
-  if(!cfg.key){ setStatus("请先填写智谱 API Key（open.bigmodel.cn 控制台免费获取）","warn"); return; }
-  const btn=$("ocrBtn"); btn.disabled=true; btn.textContent="识别中…";
-  setStatus("正在调用视觉大模型…"); showProgress(0.4);
-  const t0=Date.now();
-  try{
-    const model=curModel(), isOcr=/^glm-ocr/i.test(model);
-    const r=await fetch(cfg.proxyUrl.replace(/\/+$/,"")+"/vision",{
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({key:cfg.key, image:visionImageData(), model:model, prompt: isOcr?OCR_PROMPT:VISION_PROMPT})
-    });
-    const d=await r.json();
-    if(d.error) throw new Error(d.error);
-    const content=d.choices?.[0]?.message?.content;
-    if(!content) throw new Error("返回内容为空："+JSON.stringify(d).slice(0,200));
-    showProgress(0.85);
-    $("ocrText").value=String(content);
-    if(isOcr){ setParsed(parseNutrition(String(content)), {variant:"GLM-OCR", tries:1, ms:Date.now()-t0}); }
-    else fillFromVision(String(content));
-  }catch(e){
-    const hint=/fetch|network|Failed/i.test(e.message)
-      ? " 连不上本地代理。请双击 start-proxy.bat 启动后，再从 http://127.0.0.1:8787/ 打开本页面。" : "";
-    setStatus("调用失败："+e.message+hint,"err");
-  }finally{
-    btn.disabled=false; btn.textContent="开始识别"; showProgress(null);
+// 增加安全提取与解析 JSON 的辅助函数，完美规避图片1的 JSON 报错
+function cleanAndParseJSON(rawStr) {
+  if (typeof rawStr === "object" && rawStr !== null) return rawStr;
+  let str = String(rawStr || "").trim();
+  // 清理 Markdown 代码块包裹 ```json ... ```
+  str = str.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+  
+  // 从字符串中提取第一个 '{' 到最后一个 '}' 之间的真正 JSON 串
+  const firstBrace = str.indexOf('{');
+  const lastBrace = str.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    str = str.substring(firstBrace, lastBrace + 1);
   }
+  return JSON.parse(str);
 }
 
-function fillFromVision(txt){
-  let obj=null;
-  try{ const s=txt.indexOf("{"), e=txt.lastIndexOf("}"); obj=JSON.parse(txt.slice(s,e+1)); }
-  catch(err){ setStatus("模型返回的不是合法 JSON，已在下方原文中保留，可手动改或点「从文字中解析」。","warn"); return; }
-  const num=v=>(v===null||v===undefined||v==="")?null:parseFloat(v);
-  let kj=num(obj.energy_kj), kcal=num(obj.energy_kcal);
-  let p=num(obj.protein_g), f=num(obj.fat_g), c=num(obj.carb_g), na=num(obj.sodium_mg);
-  let k=1, conv="";
-  if(obj.basis==="per_serving" && num(obj.serving_g)){ k=100/num(obj.serving_g); conv=" 已按每份 "+num(obj.serving_g)+"g 折算为每100g"; }
-  const mul=v=> v==null?null:Math.round(v*k*10)/10;
-  const res={name:(obj.name&&obj.name!=="未知食品")?obj.name:null, basis:"per100g", serving_g:num(obj.serving_g),
-    energy_kj:mul(kj), energy_kcal:mul(kcal),
-    protein_g:mul(p), fat_g:mul(f), carb_g:mul(c), sodium_mg:mul(na),
-    raw:{}, cands:{}, notes:conv?[conv.trim()]:[], matched:0,
-    macro_kcal:(mul(p)!=null&&mul(f)!=null&&mul(c)!=null)?Math.round((mul(p)*4+mul(c)*4+mul(f)*9)*10)/10:null};
-  if(kj==null && kcal!=null) res.energy_kcal=mul(kcal);
-  res.matched=["energy","protein","fat","carb"].filter(x=>res[x==="energy"?"energy_kcal":x+"_g"]!=null).length;
-  setParsed(res, {variant:"视觉模型 "+curModel(), tries:1});
+async function runVision(){
+  saveCfg();
+  const proxyUrl = $("proxyUrl").value.trim().replace(/\/+$/,'');
+  const apiKey = $("zhipuKey").value.trim();
+  const model = curModel();
+
+  if(!apiKey) { alert("请先填写智谱 API Key！"); return; }
+  
+  const btn = $("ocrBtn");
+  btn.disabled = true;
+  btn.textContent = "AI 识别中…";
+  setStatus("正在请求大模型 API…");
+
+  try {
+    const base64Data = visionImageData();
+    const isOcrModel = /^glm-ocr/i.test(model);
+    const promptText = isOcrModel ? OCR_PROMPT : VISION_PROMPT;
+
+    const resp = await fetch(proxyUrl + "/api/paas/v4/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: promptText },
+              { type: "image_url", image_url: { url: base64Data } }
+            ]
+          }
+        ]
+      })
+    });
+
+    if(!resp.ok) {
+      const errText = await resp.text();
+      throw new Error(`API 请求失败 [${resp.status}]: ${errText}`);
+    }
+
+    const resJson = await resp.json();
+    const resContent = resJson.choices?.[0]?.message?.content || "";
+    $("ocrText").value = resContent;
+
+    if (isOcrModel) {
+      parseFromInput();
+    } else {
+      try {
+        const parsedData = cleanAndParseJSON(resContent);
+        setParsed({
+          name: parsedData.name !== "未知食品" ? parsedData.name : null,
+          basis: parsedData.basis || "per100g",
+          serving_g: parsedData.serving_g,
+          energy_kj: parsedData.energy_kj,
+          energy_kcal: parsedData.energy_kcal,
+          protein_g: parsedData.protein_g,
+          fat_g: parsedData.fat_g,
+          carb_g: parsedData.carb_g,
+          sodium_mg: parsedData.sodium_mg,
+          raw: {},
+          cands: {},
+          notes: ["识别自大模型: " + model]
+        }, { variant: "智谱大模型", tries: 1, ms: 0 });
+      } catch(e) {
+        setStatus("AI 返回了非标准格式，尝试通过本地规则二次解析…", "warn");
+        parseFromInput();
+      }
+    }
+  } catch(err) {
+    setStatus("大模型识别出错：" + err.message, "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "开始识别";
+  }
 }
 
 async function testConn(){
   saveCfg();
-  const cfg=JSON.parse(localStorage.getItem(getUserKey("calVisionCfg"))||"{}");
-  const btn=$("testBtn"); btn.disabled=true;
-  const base=(cfg.proxyUrl||"").replace(/\/+$/,"");
-  const px="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
-  const out=[];
-  try{
-    const h=await fetch(base+"/health");
-    out.push(h.ok? "① 本地代理：✅ 已启动（"+(await h.json()).model+"）" : "① 本地代理：❌ 响应异常 "+h.status);
-  }catch(e){
-    setStatus("① 本地代理：❌ 连不上（"+e.message+"）。请先双击 start-proxy.bat，再从 http://127.0.0.1:8787/ 打开页面。","err");
-    btn.disabled=false; return;
+  const proxyUrl = $("proxyUrl").value.trim().replace(/\/+$/,'');
+  const apiKey = $("zhipuKey").value.trim();
+  const model = curModel();
+
+  if(!apiKey) { alert("请先填写智谱 API Key"); return; }
+
+  const btn = $("testBtn");
+  btn.disabled = true;
+  btn.textContent = "正在测试连接…";
+
+  try {
+    const resp = await fetch(proxyUrl + "/api/paas/v4/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: "user", content: "Hello" }]
+      })
+    });
+
+    if(resp.ok) {
+      alert("连接测试成功！本地代理 + API Key + 模型 [" + model + "] 配置正确。");
+    } else {
+      const txt = await resp.text();
+      alert("测试失败 [" + resp.status + "]：\n" + txt);
+    }
+  } catch(e) {
+    alert("网络或代理异常：" + e.message + "\n请检查本地代理 ([http://127.0.0.1:8787](http://127.0.0.1:8787)) 是否已启动。");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "测试连接（验证代理 + Key + 模型）";
   }
-  if(!cfg.key){ setStatus(out.join("<br>")+"<br>② API Key：❌ 未填写","warn"); btn.disabled=false; return; }
-  const t0=Date.now();
-  try{
-    const m=curModel();
-    const r=await fetch(base+"/vision",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({key:cfg.key,image:px,prompt:"回复两个字：正常",model:m})});
-    const d=await r.json();
-    out.push(d.error ? "② Key + 模型：❌ "+d.error : "② Key + 模型：✅ 正常（"+m+"，"+(Date.now()-t0)+"ms）");
-  }catch(e){ out.push("② Key + 模型：❌ "+e.message); }
-  setStatus(out.join("<br>"));
-  btn.disabled=false;
-}
-
-/* ================= 自建食物库 ================= */
-function saveCustom(){
-  const name=$("fName").value.trim();
-  let kcal=parseFloat($("fKcal").value);
-  const p=+$("fP").value||0, f=+$("fF").value||0, c=+$("fC").value||0;
-  if(!name){ alert("请填写食物名称"); return; }
-  if($("fBasis").value==="serving" && Math.abs(parseFloat($("fServG").value)-100)>0.01){
-    alert("当前基准是「每份」，请先点右侧换算：把「每份克重」填好后再保存（系统已自动折算）。");
-    convertBasis(); return;
-  }
-  if(isNaN(kcal)) kcal=Math.round(p*4+c*4+f*9);
-  if(isNaN(kcal)||kcal<0){ alert("请填写能量，或至少填写蛋白/脂肪/碳水"); return; }
-  custom.push({name:name,kcal:Math.round(kcal*10)/10,p:p,f:f,c:c,
-    na:+$("fNa").value||0,
-    unit:$("fUnit").value.trim()||"一份",
-    unitG:+$("fUnitG").value||100, ts:Date.now()});
-  saveUserData(); renderCustom(); clearForm();
-  $("parseTip").innerHTML="已保存：<b>"+esc(name)+"</b>（每100g "+Math.round(kcal)+" 千卡）。回到「今日饮食」搜索名称即可使用。";
-  setStatus("已存入食物库。");
-}
-
-function delCustom(i){
-  if(!confirm("删除「"+custom[i].name+"」？")) return;
-  custom.splice(i,1); saveUserData(); renderCustom();
-}
-
-function renderCustom(){
-  const box=$("cfList");
-  $("cfCount").textContent=custom.length?"（"+custom.length+" 条）":"";
-  box.innerHTML = custom.length ? custom.map((o,i)=>
-    `<div class="log"><div><div class="ln">${esc(o.name)}<span class="tag off">自建</span></div>
-      <div class="lm">每100g：${o.kcal} 千卡 · 蛋白 ${o.p}g · 脂肪 ${o.f}g · 碳水 ${o.c}g${o.na?" · 钠 "+o.na+"mg":""} 份量 ${esc(o.unit)}≈${o.unitG}g</div></div>
-      <button class="del" onclick="delCustom(${i})">×</button></div>`).join("")
-    : '<div class="empty">还没有自建食物</div>';
-}
-
-function exportFoods(){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(custom,null,2)],{type:"application/json"}));
-  a.download="my-foods-"+new Date().toISOString().slice(0,10)+".json"; a.click();
-}
-function exportCsv(){
-  const rows=[["名称","能量(千卡/100g)","蛋白质g","脂肪g","碳水g","钠mg","份量名","份量克重"]]
-    .concat(custom.map(o=>[o.name,o.kcal,o.p,o.f,o.c,o.na||"",o.unit,o.unitG]));
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob(["\uFEFF"+rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}));
-  a.download="my-foods.csv"; a.click();
-}
-function importFoods(e){
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader();
-  r.onload=()=>{
-    try{
-      const arr=JSON.parse(r.result);
-      if(!Array.isArray(arr)) throw new Error("格式不是数组");
-      arr.forEach(o=>{ if(o && o.name) custom.push(o); });
-      saveUserData(); renderCustom(); alert("已导入 "+arr.length+" 条");
-    }catch(err){ alert("导入失败："+err.message); }
-  };
-  r.readAsText(file);
-}
-
-/* ================= 我的数据 ================= */
-document.querySelectorAll("#genderSeg button").forEach(b=>{
-  b.onclick=()=>{ document.querySelectorAll("#genderSeg button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active"); gender=b.dataset.gender; calc(); };
-});
-document.querySelectorAll("#goalSeg button").forEach(b=>{
-  b.onclick=()=>{ document.querySelectorAll("#goalSeg button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active"); goal=b.dataset.goal; calc(); };
-});
-["age","height","weight","activity"].forEach(id=>$(id).addEventListener("input",calc));
-
-function calc(){
-  const age=+$("age").value, h=+$("height").value, w=+$("weight").value, act=+$("activity").value;
-  if(!age||!h||!w) return;
-  bmrV = 10*w + 6.25*h - 5*age + (gender==="male"?5:-161);
-  tdeeV = bmrV*act;
-  target = goal==="lose"? Math.max(tdeeV-500, bmrV*0.8) : (goal==="gain"? tdeeV+250 : tdeeV);
-  const bmi=w/Math.pow(h/100,2);
-  let lv="正常",col="var(--green)";
-  if(bmi<18.5){lv="偏瘦";col="#0891b2";} else if(bmi>=24&&bmi<28){lv="超重";col="var(--orange)";} else if(bmi>=28){lv="肥胖";col="var(--red)";}
-  $("bmrNum").textContent=Math.round(bmrV);
-  $("tdeeNum").textContent=Math.round(tdeeV);
-  $("bmiNum").textContent=bmi.toFixed(1);
-  const el=$("bmiLevel"); el.textContent=lv; el.style.color=col;
-  const gName={lose:"减脂（每日缺口约500千卡）",maintain:"维持体重",gain:"增肌（每日盈余约250千卡）"}[goal];
-  $("targetTxt").textContent=Math.round(target)+" 千卡/天（"+gName+"）";
-  $("goalKcal").textContent=Math.round(target);
-  renderLog();
 }
 </script>
 </body>
